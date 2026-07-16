@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Environment files (JANGAN diupload - berisi secret key!)
+.env
+.env.local
+.env.production.local
+backend/.env
+backend/.env.local
+
+# Build output
+frontend/dist/
+backend/dist/
+
+# Database lokal (data development)
+backend/data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Service Account (RAHASIA - jangan diupload!)
+backend/service_account.json
+service_account.json
+*.json.key
