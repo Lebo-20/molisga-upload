@@ -22,7 +22,6 @@
     "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
-    "@rolldown/binding-win32-x64-msvc": "^1.1.5",
     "@tailwindcss/vite": "^4.3.2",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^24.13.2",
