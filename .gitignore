@@ -3,6 +3,10 @@ node_modules/
 frontend/node_modules/
 backend/node_modules/
 
+# package-lock.json from Windows - let Linux server resolve fresh
+# (avoids @rolldown/binding-win32 platform conflict on Vercel/Railway)
+frontend/package-lock.json
+
 # Environment files (JANGAN diupload - berisi secret key!)
 .env
 .env.local

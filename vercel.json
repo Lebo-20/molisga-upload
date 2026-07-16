@@ -1,6 +1,7 @@
 {
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
+  "ignore": ["frontend/package-lock.json"],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
