@@ -14,6 +14,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   loginWithGoogleToken: (idToken: string) => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
   loginMock: (email: string, name: string, role: 'admin' | 'sales' | 'service') => Promise<void>;
   logout: () => void;
   googleClientId: string | null;
@@ -67,6 +68,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const res = await api.post('/api/auth/google', { idToken });
+      const { token: jwtToken, user: userProfile } = res.data;
+
+      localStorage.setItem('molis_jwt_token', jwtToken);
+      localStorage.setItem('molis_user', JSON.stringify(userProfile));
+
+      setToken(jwtToken);
+      setUser(userProfile);
+    } catch (err: any) {
+      logout();
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle email/password login
+  const loginWithEmail = async (email: string, password: string) => {
+    setIsLoading(true);
+    try {
+      const res = await api.post('/api/auth/login', { email, password });
       const { token: jwtToken, user: userProfile } = res.data;
 
       localStorage.setItem('molis_jwt_token', jwtToken);
@@ -141,6 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated,
         isLoading,
         loginWithGoogleToken,
+        loginWithEmail,
         loginMock,
         logout,
         googleClientId,

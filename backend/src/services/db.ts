@@ -10,6 +10,7 @@ export interface User {
   name: string;
   avatar_url: string;
   role: 'admin' | 'sales' | 'service';
+  password_hash?: string; // Added for email/password authentication
   created_at: string;
 }
 
