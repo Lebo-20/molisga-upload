@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Sparkles, UserCheck, AlertTriangle, Mail, Lock, LogIn, UserPlus } from 'lucide-react';
+import { Shield, Sparkles, AlertTriangle, Mail, Lock, LogIn, UserPlus } from 'lucide-react';
 import api from '../services/api';
 
 export const Login: React.FC = () => {
@@ -86,7 +86,7 @@ export const Login: React.FC = () => {
     setError(null);
     setSuccess(null);
     try {
-      const res = await api.post('/api/auth/register', {
+      await api.post('/api/auth/register', {
         email,
         password,
         name,
