@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Sparkles, UserCheck, AlertTriangle, Mail, Lock, LogIn } from 'lucide-react';
+import { Shield, Sparkles, UserCheck, AlertTriangle, Mail, Lock, LogIn, UserPlus } from 'lucide-react';
+import api from '../services/api';
 
 export const Login: React.FC = () => {
   const { loginWithGoogleToken, loginWithEmail, loginMock, googleClientId } = useAuth();
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Form input states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [role, setRole] = useState<'sales' | 'service'>('sales');
 
   // Load Google SDK Script dynamically
   useEffect(() => {
@@ -71,6 +76,40 @@ export const Login: React.FC = () => {
     }
   };
 
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password || !name) {
+      setError('Nama, Email, dan Password wajib diisi');
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+    try {
+      const res = await api.post('/api/auth/register', {
+        email,
+        password,
+        name,
+        role
+      });
+      setSuccess('Registrasi Berhasil! Anda akan otomatis masuk...');
+      
+      // Auto login after registration success
+      setTimeout(async () => {
+        try {
+          await loginWithEmail(email, password);
+        } catch (err: any) {
+          setError(err.message || 'Gagal masuk otomatis');
+          setIsRegisterMode(false);
+        }
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Registrasi gagal. Email mungkin sudah terdaftar.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleMockLogin = async (role: 'admin' | 'sales' | 'service') => {
     setIsLoading(true);
     setError(null);
@@ -115,47 +154,137 @@ export const Login: React.FC = () => {
           </div>
         )}
 
-        {/* Email & Password Login Form */}
-        <form onSubmit={handleEmailLoginSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Email Karyawan</label>
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-zinc-600" />
+        {success && (
+          <div className="mb-5 p-3.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-xl text-xs">
+            {success}
+          </div>
+        )}
+
+        {/* Email & Password Form (Dynamic Mode) */}
+        {!isRegisterMode ? (
+          // =============================================
+          // LOGIN FORM
+          // =============================================
+          <form onSubmit={handleEmailLoginSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Email Karyawan</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-3.5 w-4 h-4 text-zinc-600" />
+                <input
+                  type="email"
+                  placeholder="sales@molisgemilang.my.id"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-zinc-700"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Kata Sandi</label>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-zinc-600" />
+                <input
+                  type="password"
+                  placeholder="Masukkan kata sandi"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-zinc-700"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-800 text-zinc-950 disabled:text-zinc-600 rounded-xl py-3 text-xs font-bold transition-all duration-200 cursor-pointer"
+            >
+              <LogIn className="w-4 h-4" />
+              {isLoading ? 'Menghubungkan...' : 'Masuk Portal'}
+            </button>
+          </form>
+        ) : (
+          // =============================================
+          // REGISTRATION FORM
+          // =============================================
+          <form onSubmit={handleRegisterSubmit} className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Nama Lengkap *</label>
+              <input
+                type="text"
+                placeholder="cth: Ahmad Ridwan"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-zinc-700"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Email Aktif *</label>
               <input
                 type="email"
-                placeholder="cth: sales@molisgemilang.my.id"
+                placeholder="cth: ahmad@molisgemilang.my.id"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-zinc-700"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-zinc-700"
               />
             </div>
-          </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Kata Sandi</label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-3.5 w-4 h-4 text-zinc-600" />
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Buat Kata Sandi *</label>
               <input
                 type="password"
-                placeholder="Masukkan kata sandi"
+                placeholder="Minimal 6 karakter"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-zinc-700"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-zinc-700"
               />
             </div>
-          </div>
 
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block">Pilih Role Akses *</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value as any)}
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs focus:outline-none text-white"
+              >
+                <option value="sales">Sales (Input Laporan Penjualan)</option>
+                <option value="service">Service Center (Input Minimalis)</option>
+              </select>
+              <span className="text-[9px] text-zinc-500 block leading-tight mt-1">
+                Catatan: Pendaftar pertama pada database otomatis ditugaskan sebagai **Admin Utama (Admin Dealer)**.
+              </span>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-800 text-zinc-950 disabled:text-zinc-600 rounded-xl py-3 text-xs font-bold transition-all duration-200 cursor-pointer"
+            >
+              <UserPlus className="w-4 h-4" />
+              {isLoading ? 'Mendaftarkan...' : 'Daftar Akun'}
+            </button>
+          </form>
+        )}
+
+        {/* Toggle Form Mode Button */}
+        <div className="text-center mt-4">
           <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-800 text-zinc-950 disabled:text-zinc-600 rounded-xl py-3 text-xs font-bold transition-all duration-200 cursor-pointer"
+            type="button"
+            onClick={() => {
+              setIsRegisterMode(!isRegisterMode);
+              setError(null);
+            }}
+            className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold"
           >
-            <LogIn className="w-4 h-4" />
-            {isLoading ? 'Menghubungkan...' : 'Masuk Portal'}
+            {isRegisterMode ? 'Sudah punya akun? Masuk di sini' : 'Belum punya akun? Daftar sekarang'}
           </button>
-        </form>
+        </div>
 
         <div className="relative w-full my-5 text-center">
           <span className="bg-zinc-900 px-3 text-[10px] text-zinc-500 uppercase tracking-wider relative z-10">ATAU LOGIN GOOGLE</span>
