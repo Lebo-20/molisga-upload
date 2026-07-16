@@ -329,6 +329,7 @@ class FirebaseDatabase implements IDatabase {
       const projId = process.env.FIREBASE_PROJECT_ID;
       const email = process.env.FIREBASE_CLIENT_EMAIL;
       const key = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+      const saFile = process.env.GOOGLE_SERVICE_ACCOUNT_FILE || './service_account.json';
 
       if (projId && email && key) {
         admin.initializeApp({
@@ -338,6 +339,21 @@ class FirebaseDatabase implements IDatabase {
             privateKey: key,
           }),
         });
+      } else if (fs.existsSync(saFile)) {
+        try {
+          const creds = JSON.parse(fs.readFileSync(saFile, 'utf-8'));
+          admin.initializeApp({
+            credential: admin.credential.cert({
+              projectId: creds.project_id,
+              clientEmail: creds.client_email,
+              privateKey: creds.private_key,
+            }),
+          });
+          console.log('[Database] Initialized Firebase Firestore using service_account.json');
+        } catch (err: any) {
+          console.error('[Database] Failed to init Firebase from file, fallback to ADC:', err.message);
+          admin.initializeApp();
+        }
       } else {
         // Fallback to local ADC/Application Default Credentials
         admin.initializeApp();
