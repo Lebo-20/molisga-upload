@@ -33,3 +33,5 @@ Thumbs.db
 backend/service_account.json
 service_account.json
 *.json.key
+
+.vercel
