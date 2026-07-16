@@ -56,15 +56,24 @@ app.get('/api/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     db_type: process.env.DB_TYPE || 'local',
+    platform: process.env.VERCEL ? 'vercel' : 'self-hosted',
   });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`==================================================`);
-  console.log(` MOLIS REPORT SYSTEM BACKEND IS RUNNING `);
-  console.log(` Port: ${PORT} `);
-  console.log(` Environment: ${process.env.NODE_ENV || 'development'} `);
-  console.log(` Database Mode: ${process.env.DB_TYPE || 'local'} `);
-  console.log(`==================================================`);
-});
+// Vercel: export app as serverless handler
+// Railway / Local: start listening normally
+if (process.env.VERCEL) {
+  // Vercel serverless — just export the app
+  module.exports = app;
+} else {
+  app.listen(PORT, () => {
+    console.log(`==================================================`);
+    console.log(` MOLIS REPORT SYSTEM BACKEND IS RUNNING `);
+    console.log(` Port: ${PORT} `);
+    console.log(` Environment: ${process.env.NODE_ENV || 'development'} `);
+    console.log(` Database Mode: ${process.env.DB_TYPE || 'local'} `);
+    console.log(`==================================================`);
+  });
+}
+
+export default app;
