@@ -6,7 +6,7 @@ import {
   saveDraft, getDraft, clearDraft, enqueueUpload, fileToBase64 
 } from '../utils/db';
 import type { FormDraft, QueueFile } from '../utils/db';
-import { compressImageClient, validateFile, scanFilenameForCategory } from '../utils/image';
+import { compressImageClient, validateFile } from '../utils/image';
 import { 
   UploadCloud, CheckCircle2, AlertCircle, RefreshCw, AlertTriangle, ShieldCheck,
   X, Camera, Images, CreditCard, Receipt, Bike, Hash, Settings2
