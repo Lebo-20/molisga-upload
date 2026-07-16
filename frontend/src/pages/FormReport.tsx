@@ -36,7 +36,6 @@ export const FormReport: React.FC = () => {
   const [files, setFiles] = useState<Record<string, File>>({});
   const [filePreviews, setFilePreviews] = useState<Record<string, string>>({});
   const [fileErrors, setFileErrors] = useState<Record<string, string>>({});
-  const [fileWarnings, setFileWarnings] = useState<Record<string, string>>({});
 
   // OCR Status States
   const [ocrLoading, setOcrLoading] = useState(false);
@@ -189,34 +188,6 @@ export const FormReport: React.FC = () => {
     }
   };
 
-  const handleSupportingFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    if (selectedFiles.length === 0) return;
-
-    const keys = ['ktp', 'pembayaran', 'unit', 'noka', 'nosin'];
-    let keyIdx = 0;
-    
-    for (const file of selectedFiles) {
-      while (keyIdx < keys.length && files[keys[keyIdx]]) {
-        keyIdx++;
-      }
-      if (keyIdx >= keys.length) {
-        alert('Maksimum 5 dokumen pendukung tambahan!');
-        break;
-      }
-
-      const keyName = keys[keyIdx];
-      const validation = validateFile(file);
-      if (!validation.isValid) {
-        alert(`File ${file.name} tidak valid: ${validation.error}`);
-        continue;
-      }
-
-      setFiles((prev) => ({ ...prev, [keyName]: file }));
-      setFilePreviews((prev) => ({ ...prev, [keyName]: URL.createObjectURL(file) }));
-      keyIdx++;
-    }
-  };
 
   const removeSupportingFile = (keyName: string) => {
     setFiles((prev) => {
