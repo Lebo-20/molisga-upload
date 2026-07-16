@@ -303,37 +303,39 @@ export const Login: React.FC = () => {
             </div>
           )}
 
-          {/* Demo Users Selection */}
-          <div className="border-t border-zinc-800/80 pt-4 space-y-2">
-            <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Pilih Akun Demo (Quick Access)</h3>
-            
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleMockLogin('admin')}
-                disabled={isLoading}
-                className="bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 text-purple-400 py-2 rounded-xl text-[10px] font-semibold transition-all duration-200"
-              >
-                Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => handleMockLogin('sales')}
-                disabled={isLoading}
-                className="bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 py-2 rounded-xl text-[10px] font-semibold transition-all duration-200"
-              >
-                Sales
-              </button>
-              <button
-                type="button"
-                onClick={() => handleMockLogin('service')}
-                disabled={isLoading}
-                className="bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/40 text-blue-400 py-2 rounded-xl text-[10px] font-semibold transition-all duration-200"
-              >
-                Service
-              </button>
+          {/* Demo Users Selection - ONLY visible in local development mode */}
+          {import.meta.env.DEV && (
+            <div className="border-t border-zinc-800/80 pt-4 space-y-2">
+              <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Pilih Akun Demo (Quick Access)</h3>
+              
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleMockLogin('admin')}
+                  disabled={isLoading}
+                  className="bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 hover:border-purple-500/40 text-purple-400 py-2 rounded-xl text-[10px] font-semibold transition-all duration-200"
+                >
+                  Admin
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMockLogin('sales')}
+                  disabled={isLoading}
+                  className="bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 py-2 rounded-xl text-[10px] font-semibold transition-all duration-200"
+                >
+                  Sales
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleMockLogin('service')}
+                  disabled={isLoading}
+                  className="bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/40 text-blue-400 py-2 rounded-xl text-[10px] font-semibold transition-all duration-200"
+                >
+                  Service
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="text-center mt-6 text-[10px] text-zinc-600">
