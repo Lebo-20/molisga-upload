@@ -167,17 +167,6 @@ export const FormReport: React.FC = () => {
       return copy;
     });
 
-    // Check classification heuristics
-    const heuristic = scanFilenameForCategory(fieldName, file.name);
-    if (heuristic.warning) {
-      setFileWarnings((prev) => ({ ...prev, [fieldName]: heuristic.message || '' }));
-    } else {
-      setFileWarnings((prev) => {
-        const copy = { ...prev };
-        delete copy[fieldName];
-        return copy;
-      });
-    }
 
     setFiles((prev) => ({ ...prev, [fieldName]: file }));
     setFilePreviews((prev) => ({ ...prev, [fieldName]: URL.createObjectURL(file) }));
